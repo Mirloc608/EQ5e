@@ -68,22 +68,11 @@ function _crestForActor(actor) {
   if (img && img !== "icons/svg/mystery-man.svg") return img;
 
   const c = _normalizeClassName(_getPrimaryClassName(actor));
-  if (/(bard)/.test(c)) return "systems/eq5e/assets/ui/bard.png";
-  if (/(beastlord)/.test(c)) return "systems/eq5e/assets/ui/beastlord.png";
-  if (/(berserker)/.test(c)) return "systems/eq5e/assets/ui/berserker.png";
-  if (/(cleric)/.test(c)) return "systems/eq5e/assets/ui/cleric.png";
-  if (/(druid)/.test(c)) return "systems/eq5e/assets/ui/druid.png";
-  if (/(enchanter)/.test(c)) return "systems/eq5e/assets/ui/enchanter.png";
-  if (/(magician)/.test(c)) return "systems/eq5e/assets/ui/magician.png";
-  if (/(monk)/.test(c)) return "systems/eq5e/assets/ui/monk.png";
-  if (/(necromancer)/.test(c)) return "systems/eq5e/assets/ui/necromancer.png";
-  if (/(paladin)/.test(c)) return "systems/eq5e/assets/ui/paaladin.png";
-  if (/(ranger)/.test(c)) return "systems/eq5e/assets/ui/ranger.png";
-  if (/(rogue)/.test(c)) return "systems/eq5e/assets/ui/rogue.png";
-  if (/(shadowknight)/.test(c)) return "systems/eq5e/assets/ui/shadowknight.png"; 
-  if (/(shaman)/.test(c)) return "systems/eq5e/assets/ui/shaman.png"; 
-  if (/(warrior)/.test(c)) return "systems/eq5e/assets/ui/warrior.png";
-  if (/(wizard)/.test(c)) return "systems/eq5e/assets/ui/wizard.png";
+  if (/(warrior|paladin|shadow|knight)/.test(c)) return "systems/eq5e/assets/ui/crest_knight.png";
+  if (/(druid|ranger|shaman|beast|warden)/.test(c)) return "systems/eq5e/assets/ui/crest_dragon.png";
+  if (/(cleric|priest|templar|healer)/.test(c)) return "systems/eq5e/assets/ui/crest_ankh.png";
+  if (/(wizard|magician|mage|enchanter|necromancer|sorcerer)/.test(c)) return "systems/eq5e/assets/ui/crest_moon.png";
+  if (/(rogue|bard|monk|assassin|skald)/.test(c)) return "systems/eq5e/assets/ui/crest_blades.png";
   return "systems/eq5e/assets/ui/crest_knight.png";
 }
 
@@ -141,6 +130,16 @@ function _allowedString(slotKey) {
   return (s.allowed ?? []).map(t => TYPE_LABEL[t] ?? t).join(", ");
 }
 
+function _flashDrop(el, ok) {
+  if (!el) return;
+  const cls = ok ? "drop-ok" : "drop-bad";
+  el.classList.remove("drop-ok", "drop-bad");
+  // Force reflow so the animation restarts on rapid drops
+  void el.offsetWidth; // eslint-disable-line no-unused-expressions
+  el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), 650);
+}
+
 function _itemEqType(item) {
   // Prefer explicit eq5e category
   const t = item?.type;
@@ -191,12 +190,12 @@ async function _unequipSlot(actor, slotKey) {
 }
 
 async function _equipToSlot(actor, item, slotKey) {
-  if (!actor || !item) return;
+  if (!actor || !item) return false;
 
   // enforce allowed
   if (!_canEquipInSlot(item, slotKey)) {
     ui.notifications?.warn(`That doesn't fit in ${slotKey.toUpperCase()} (Allowed: ${_allowedString(slotKey) || "—"}).`);
-    return;
+    return false;
   }
 
   // swap/unequip anything already in that slot
@@ -221,6 +220,8 @@ async function _equipToSlot(actor, item, slotKey) {
   await item.setFlag("eq5e", "equipped", true);
   await item.setFlag("eq5e", "slot", slotKey);
   await actor.setFlag("eq5e", `equipment.${slotKey}`, item.id);
+
+  return true;
 }
 
 /* ---------------------------------- Sheet --------------------------------- */
@@ -452,7 +453,9 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     // Clear token
     if (data?.eq5e === "clear-slot") {
-      return _unequipSlot(actor, slotKey);
+      await _unequipSlot(actor, slotKey);
+      _flashDrop(slotEl, true);
+      return;
     }
 
     // Foundry drag/drop payload usually includes uuid
@@ -479,7 +482,9 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const owned = await _ensureOwnedItem(actor, doc);
     if (!owned) return;
 
-    return _equipToSlot(actor, owned, slotKey);
+    const ok = await _equipToSlot(actor, owned, slotKey);
+    _flashDrop(slotEl, !!ok);
+    return;
   }
 }
 

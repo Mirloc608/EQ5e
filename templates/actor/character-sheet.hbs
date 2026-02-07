@@ -43,6 +43,11 @@
     .eq5e-doll-silhouette { height: 420px; border-radius: 16px; border: 1px solid rgba(60,40,20,0.22); background: rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-weight: 900; opacity: .7; text-align:center; padding: 10px; }
     .eq5e-slotbox { border-radius: 12px; border: 1px solid rgba(60,40,20,0.22); background: rgba(255,255,255,0.14); padding: 8px; margin-bottom: 8px; outline: 1px dashed rgba(60,40,20,0.25); }
     .eq5e-slotbox:hover { filter: brightness(1.06); }
+    .eq5e-slotbox.drop-hover { filter: brightness(1.08); outline-style: solid; }
+    .eq5e-slotbox.drop-ok { animation: eq5eDropOk 520ms ease-out; }
+    .eq5e-slotbox.drop-bad { animation: eq5eDropBad 420ms ease-out; }
+    @keyframes eq5eDropOk { 0% { transform: scale(1.01); } 50% { transform: scale(1.03); } 100% { transform: scale(1.0); } }
+    @keyframes eq5eDropBad { 0% { transform: translateX(0); } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-3px); } 100% { transform: translateX(0); } }
     .eq5e-slotbox .slotlabel { font-size: 11px; text-transform: uppercase; opacity: .85; font-weight: 900; display:flex; justify-content:space-between; align-items:center; gap: 8px; }
     .eq5e-slotbox .slotitem { font-weight: 900; margin-top: 4px; display:flex; justify-content:space-between; gap: 8px; }
     .eq5e-slotbox .slotitem .empty { opacity: .7; font-weight: 700; }
