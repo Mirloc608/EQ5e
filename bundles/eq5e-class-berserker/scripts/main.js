@@ -1,127 +1,160 @@
-// EQ5e Berserker module: generates class compendiums and merges Berserker AAs into the shared world.eq5e-aa pack.
-const MOD = "eq5e-class-berserker";
+// EQ5e Berserker module: merges Berserker AAs into shared world.eq5e-aa pack.
+// Drop-in FIX: sanitize embedded effects + handle type changes safely (Foundry v13).
+// Upsert key: flags.eq5e.aa.aaId
 
-console.warn("[EQ5E] Berserker main.js loaded (DROPIN FIXED1)");
+const MOD_ID = "eq5e-class-berserker";
+console.warn("[EQ5E] Berserker main.js loaded (DROPIN FIXED: effects+typechange)");
 
-
-async function _fetchJSON(path) {
+async function fetchJSON(path) {
   const res = await fetch(path);
   if (!res.ok) throw new Error(`Fetch failed ${res.status} for ${path}`);
   return res.json();
 }
 
-
-function _modulePath(moduleId, rel) {
-  // If running as a separate module, use its path.
+function modulePath(moduleId, rel) {
   try {
     const mod = game.modules?.get(moduleId);
     if (mod?.active && mod?.path) return `${mod.path}/${rel}`;
   } catch (e) {}
-  // Bundled into the system: fall back to system bundle folder.
   return `systems/eq5e/bundles/${moduleId}/${rel}`;
 }
 
-function _stableHash(obj) {
+function stableHash(obj) {
   const s = JSON.stringify(obj);
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
   return (h >>> 0).toString(16);
 }
 
-async function ensureWorldPack({ key, label, type="Item" }) {
+async function ensureWorldPack({ key, label }) {
   const existing = game.packs?.get(key);
   if (existing) return existing;
-  if (!game.user.isGM) throw new Error("Only GM can create world compendiums.");
+  if (!game.user?.isGM) throw new Error("Only GM can create world compendiums.");
   return CompendiumCollection.createCompendium({
     label,
     name: key.split(".")[1],
-    type,
+    type: "Item",
     package: "world"
   });
 }
 
-async function upsertByKey(pack, items, keyFn) {
+// --- Data normalization ------------------------------------------------------
 
+function sanitizeItemForFoundryV13(raw) {
+  const it = foundry.utils.duplicate(raw ?? {});
+  if (!it || typeof it !== "object") return it;
+
+  // Ensure Item.type is a valid string for EQ5e items; default to "aa"
+  if (typeof it.type !== "string" || !it.type.trim() || /^\d+$/.test(it.type)) it.type = "aa";
+
+  // Some sources accidentally use effects as an object-map of templates.
+  // Foundry expects Item.effects: Array<ActiveEffectSource>
+  const fx = it.effects;
+  if (fx && !Array.isArray(fx) && typeof fx === "object") {
+    it.flags = it.flags ?? {};
+    it.flags.eq5e = it.flags.eq5e ?? {};
+    it.flags.eq5e.effectTemplates = { ...(it.flags.eq5e.effectTemplates ?? {}), ...fx };
+    delete it.effects;
+  }
+
+  // Valid embedded AE ids must be 16-char alphanumeric
+  if (Array.isArray(it.effects)) {
+    for (const e of it.effects) {
+      if (!e) continue;
+      if (!e._id || !/^[A-Za-z0-9]{16}$/.test(String(e._id))) {
+        e._id = foundry.utils.randomID(16);
+      }
+    }
+  }
+
+  return it;
+}
+
+// --- Upsert helper -----------------------------------------------------------
+// If an existing document has a different Item.type, Foundry v13 forbids changing it
+// via update unless you force-replace system or set recursive:false (still risky).
+// For packs, safest behavior: delete+recreate the entry.
+async function upsertByKey(pack, items, getKey, { defaultType="aa" } = {}) {
   const existing = await pack.getDocuments();
   const byKey = new Map();
   for (const d of existing) {
-    const k = keyFn(d);
+    const k = getKey(d);
     if (k) byKey.set(k, d);
   }
 
   const toCreate = [];
   const toUpdate = [];
+  const toRecreate = []; // {doc, data}
 
   for (const raw of (items ?? [])) {
-    const it = game.eq5e?.normalizeItemData ? game.eq5e.normalizeItemData(raw) : foundry.utils.duplicate(raw);
-    const k = keyFn(it);
-    if (!k) continue;
-    const doc = byKey.get(k);
-    const h = _stableHash((game.eq5e?.normalizeItemData ? game.eq5e.normalizeItemData(it) : it));
+    const data0 = sanitizeItemForFoundryV13(raw);
+    if (!data0.type) data0.type = defaultType;
 
+    const k = getKey(data0);
+    if (!k) continue;
+
+    // Hash AFTER sanitize so effect-id fixes don't cause perpetual churn
+    const h = stableHash(data0);
+
+    data0.flags = data0.flags ?? {};
+    data0.flags.eq5e = data0.flags.eq5e ?? {};
+    data0.flags.eq5e.derivedHash = h;
+
+    const doc = byKey.get(k);
     if (!doc) {
-      it.flags = it.flags ?? {};
-      it.flags.eq5e = it.flags.eq5e ?? {};
-      it.flags.eq5e.derivedHash = h;
-      toCreate.push(it);
-    } else {
-      const old = doc?.flags?.eq5e?.derivedHash;
-      if (old !== h) {
-        const upd = foundry.utils.duplicate(it);
-        upd._id = doc.id;
-        upd.flags = upd.flags ?? {};
-        upd.flags.eq5e = upd.flags.eq5e ?? {};
-        upd.flags.eq5e.derivedHash = h;
-        toUpdate.push(upd);
-      }
+      toCreate.push(data0);
+      continue;
     }
+
+    const oldHash = doc?.flags?.eq5e?.derivedHash ?? null;
+    if (oldHash === h) continue;
+
+    // Type change => recreate
+    if (String(doc.type) !== String(data0.type)) {
+      toRecreate.push({ doc, data: data0 });
+      continue;
+    }
+
+    // Normal update
+    const upd = foundry.utils.duplicate(data0);
+    upd._id = doc.id;
+    upd.type = doc.type; // pin type
+    toUpdate.push(upd);
   }
 
   if (toCreate.length) await pack.documentClass.createDocuments(toCreate, { pack: pack.collection });
   if (toUpdate.length) await pack.documentClass.updateDocuments(toUpdate, { pack: pack.collection });
-  return { created: toCreate.length, updated: toUpdate.length };
+
+  if (toRecreate.length) {
+    const ids = toRecreate.map(r => r.doc.id);
+    await pack.documentClass.deleteDocuments(ids, { pack: pack.collection });
+    const recreated = toRecreate.map(r => r.data);
+    await pack.documentClass.createDocuments(recreated, { pack: pack.collection });
+  }
+
+  return { created: toCreate.length + toRecreate.length, updated: toUpdate.length, recreated: toRecreate.length };
 }
 
-export async function generateBerserkerPacks() {
-  const features = await _fetchJSON(_modulePath(MOD, "data/abilities.json"));
-  const discs = await _fetchJSON(_modulePath(MOD, "data/disciplines.json"));
-
-  const featPack = await ensureWorldPack({ key: "world.eq5e-berserker-features", label: "EQ5e Berserker Class Features" });
-  const discPack = await ensureWorldPack({ key: "world.eq5e-berserker-disciplines", label: "EQ5e Berserker Disciplines" });
-
-  await upsertByKey(featPack, features.map(f => {
-    // reuse spellId slot for deterministic upsert (like other loaders)
-    f.flags = f.flags ?? {}; f.flags.eq5e = f.flags.eq5e ?? {};
-    f.flags.eq5e.spell = f.flags.eq5e.spell ?? {};
-    f.flags.eq5e.spell.spellId = f.flags.eq5e.spell.spellId ?? f.flags.eq5e.sourceId ?? f.name;
-    return f;
-  }), (d) => d?.flags?.eq5e?.spell?.spellId ?? d?.flags?.eq5e?.sourceId);
-
-  await upsertByKey(discPack, discs, (d) => d?.flags?.eq5e?.spell?.spellId);
-
-  ui.notifications?.info("EQ5E: Berserker packs generated/updated.");
-}
+// --- Berserker AA merge ------------------------------------------------------
 
 export async function mergeBerserkerAAsIntoSharedPack() {
-  const aas = await _fetchJSON(_modulePath(MOD, "data/aas.json"));
   const pack = await ensureWorldPack({ key: "world.eq5e-aa", label: "EQ5e Alternate Abilities" });
-  const res = await upsertByKey(pack, aas, (d) => d?.flags?.eq5e?.aa?.aaId);
-  ui.notifications?.info(`EQ5E: Berserker AAs merged: created ${res.created}, updated ${res.updated}.`);
+  const aas = await fetchJSON(modulePath(MOD_ID, "data/aas.json"));
+
+  const res = await upsertByKey(
+    pack,
+    aas,
+    (x) => x?.flags?.eq5e?.aa?.aaId,
+    { defaultType: "aa" }
+  );
+
+  ui.notifications?.info(`EQ5E: Berserker AAs merged. created ${res.created}, updated ${res.updated}${res.recreated ? `, recreated ${res.recreated}` : ""}.`);
+  return { ok: true, pack: pack.collection, ...res };
 }
 
 Hooks.once("init", () => {
-  game.settings.register("eq5e", "berserkerOnStartup", {
-    name: "Generate Berserker packs on startup",
-    hint: "Creates/updates Berserker features & disciplines packs.",
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: true
-  });
-
   game.settings.register("eq5e", "berserkerAAsOnStartup", {
-    name: "Merge Berserker AAs into shared AA pack on startup",
-    hint: "Upserts Berserker AA items into world.eq5e-aa (used by the AA Browser).",
+    name: "Berserker: Merge AAs on Startup",
     scope: "world",
     config: true,
     type: Boolean,
@@ -130,10 +163,10 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", async () => {
-  if (!game.user.isGM) return;
+  if (!game.user?.isGM) return;
+  if (!game.settings.get("eq5e", "berserkerAAsOnStartup")) return;
   try {
-    if (game.settings.get("eq5e", "berserkerOnStartup")) await generateBerserkerPacks();
-    if (game.settings.get("eq5e", "berserkerAAsOnStartup")) await mergeBerserkerAAsIntoSharedPack();
+    await mergeBerserkerAAsIntoSharedPack();
   } catch (e) {
     console.error("[EQ5E] Berserker startup failed", e);
   }

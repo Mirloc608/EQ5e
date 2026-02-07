@@ -86,6 +86,23 @@ const STARTING_ITEMS_BY_CLASS = {
   Berserker: ["Rusty Axe", "Patchwork Armor"]
 };
 
+// Help text for each wizard step (rendered as a Dialog popup the first time
+// the player reaches that step). Keep messages short and actionable.
+const WIZARD_HELP = {
+  1: {
+    title: "Step 1 — Basics",
+    body: `Choose an <strong>Era</strong> to limit races/classes, pick a <strong>Race</strong> and <strong>Class</strong>, and enter a <strong>Name</strong>. GMs can toggle era restrictions in settings.`
+  },
+  2: {
+    title: "Step 2 — Options",
+    body: `Toggle <strong>Auto Spells</strong> and <strong>Auto Items</strong>. These will attempt to clone starter spells/items from available compendiums for the selected class.`
+  },
+  3: {
+    title: "Step 3 — Create",
+    body: `Review your choices and click <strong>Create</strong> to make the character. The wizard will open the character sheet when finished.`
+  }
+};
+
 // --- Helpers ---
 
 function _titleCase(s) {
@@ -194,6 +211,7 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       autoSpells: true,
       autoItems: true
     };
+    this._helpShown = new Set();
   }
 
   async _prepareContext(options) {
@@ -252,6 +270,43 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     root.querySelectorAll("input, select").forEach(el => {
       el.addEventListener("change", (ev) => this._onChange(ev));
     });
+
+    // Show contextual help for the current step once per session/render lifecycle.
+    this._maybeShowHelp();
+  }
+
+  _maybeShowHelp() {
+    const step = Number(this._step || 1);
+    if (this._helpShown.has(step)) return;
+    const msg = WIZARD_HELP[step];
+    if (!msg) return;
+    this._helpShown.add(step);
+
+    const inst = this;
+    new Dialog({
+      title: msg.title,
+      content: `<div class="eq5e-wiz-help">${msg.body}</div>`,
+      buttons: {
+        ok: {
+          icon: '<i class="fa-solid fa-check"></i>',
+          label: "Got it",
+          callback: () => {}
+        },
+        next: {
+          icon: '<i class="fa-solid fa-arrow-right"></i>',
+          label: "Next Step",
+          callback: () => {
+            inst._step = Math.min(3, Number(inst._step) + 1);
+            inst.render({ parts: ["app"] });
+          }
+        }
+      },
+      default: "ok",
+      render: (html) => {
+        // small styling helper if needed
+        html.find('.eq5e-wiz-help').css({ 'font-size': '0.95rem' });
+      }
+    }).render(true);
   }
 
   async _onChange(event) {
