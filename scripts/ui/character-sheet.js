@@ -39,8 +39,8 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
 Hooks.once("init", () => {
   try {
-    // Register the sheet (V13 still uses registerSheet; the class is now V2)
-    Actors.registerSheet("eq5e", EQ5eActorSheet, {
+    // Register the sheet using the namespaced API to avoid deprecated globals.
+    foundry.documents.collections.Actors.registerSheet("eq5e", EQ5eActorSheet, {
       types: ["character", "npc", "pet"],
       makeDefault: true,
       label: "EQ5e Actor Sheet"
