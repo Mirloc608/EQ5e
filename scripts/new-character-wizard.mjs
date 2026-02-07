@@ -395,11 +395,21 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       const race = _titleCase(this._data.race);
       const cls = _titleCase(this._data.cls);
 
-      const actor = await Actor.create({
-        name,
-        type: "character",
-        img: "systems/eq5e/assets/ui/default-portrait.webp"
-      }, { renderSheet: false });
+      let actor;
+      try {
+        actor = await Actor.create({ name, type: "character", img: "systems/eq5e/assets/ui/default-portrait.webp" }, { renderSheet: false });
+      } catch (e) {
+        // Some storage backends (or permission setups) may not allow writing to
+        // the system's assets path (error like: Directory canvas/tokens does not exist).
+        // Fall back to a built-in generic avatar so character creation can continue.
+        console.warn("[EQ5E] Actor.create failed with default image, retrying with built-in icon:", e);
+        try {
+          actor = await Actor.create({ name, type: "character", img: "icons/svg/mystery-man.svg" }, { renderSheet: false });
+        } catch (e2) {
+          console.error("[EQ5E] Actor.create failed (fallback also failed)", e2);
+          throw e2;
+        }
+      }
 
       await _applyRaceClassBasics(actor, { race, cls });
 
