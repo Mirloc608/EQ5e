@@ -403,6 +403,23 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
 
       await _applyRaceClassBasics(actor, { race, cls });
 
+      // Best-effort: add a `class` and `race` Item to the actor so sheets
+      // that prefer an embedded Class/ Race document can show properly.
+      try {
+        const classDoc = await _findItemInPacks({ name: cls, type: "class" });
+        const raceDoc = await _findItemInPacks({ name: race, type: "race" });
+        const addDocs = [];
+        if (classDoc) addDocs.push(classDoc);
+        if (raceDoc) addDocs.push(raceDoc);
+        if (addDocs.length) {
+          const added = await _cloneItemsToActor(actor, addDocs);
+          if (added) ui.notifications?.info(`EQ5E: Added ${added} core item(s) (class/race).`);
+        }
+      } catch (e) {
+        // non-fatal
+        console.warn("[EQ5E] Failed to add class/race items to actor", e);
+      }
+
       // Best-effort: add starter spells
       if (this._data.autoSpells) {
         const want = STARTING_SPELLS[cls] ?? [];
