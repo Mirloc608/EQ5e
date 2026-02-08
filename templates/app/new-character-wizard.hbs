@@ -62,7 +62,7 @@
             <div class="pill">Spent: {{eq5e.chargen.pointBuy.spent}}</div>
             <div class="pill" style="{{#if (eq eq5e.chargen.pointBuy.remaining 0)}}color:#d00; font-weight:900;{{else if (lte eq5e.chargen.pointBuy.remaining 5)}}color:#d8a700; font-weight:900;{{/if}}">Remaining: {{eq5e.chargen.pointBuy.remaining}}</div>
           </div>
-          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;">
             <div style="display:flex; align-items:center; gap:8px;">
               <div style="width:36px; font-weight:900; text-transform:uppercase;">STR</div>
               <button type="button" class="eq5e-mini-btn" data-action="decStat" data-stat="str" {{#unless eq5e.chargen.buttonStates.str_canDec}}disabled{{/unless}}>−</button>
