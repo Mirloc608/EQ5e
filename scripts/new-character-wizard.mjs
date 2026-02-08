@@ -94,6 +94,10 @@ const WIZARD_HELP = {
     body: `Choose an <strong>Era</strong> to limit races/classes, pick a <strong>Race</strong> and <strong>Class</strong>, and enter a <strong>Name</strong>. GMs can toggle era restrictions in settings.`
   },
   2: {
+    title: "Step 2 — Stats (Point-Buy)",
+    body: `Assign ability scores using the standard D&D 5e point-buy (27 points). Base scores start at 8 and can be increased to 15.`
+  },
+  2: {
     title: "Step 2 — Options",
     body: `Toggle <strong>Auto Spells</strong> and <strong>Auto Items</strong>. These will attempt to clone starter spells/items from available compendiums for the selected class.`
   },
@@ -112,6 +116,10 @@ function _titleCase(s) {
     .map(w => w ? (w[0].toUpperCase() + w.slice(1).toLowerCase()) : "")
     .join(" ");
 }
+
+// Point-buy costs (score -> cost from base 8)
+const POINT_BUY_COST = {8:0,9:1,10:2,11:3,12:4,13:5,14:7,15:9};
+const POINT_BUY_BUDGET = 27;
 
 function _safeGet(obj, path, fallback = null) {
   return foundry.utils.getProperty(obj, path) ?? fallback;
@@ -225,7 +233,9 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       cls: "Warrior",
       applyRestrictions: true,
       autoSpells: true,
-      autoItems: true
+      autoItems: true,
+      // default point-buy base scores (start at 8)
+      stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 }
     };
     this._helpShown = new Set();
   }
@@ -271,6 +281,13 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       },
       state: foundry.utils.duplicate(this._data)
     };
+    // Compute point-buy totals for stats
+    const stats = this._data.stats || { str:8,dex:8,con:8,int:8,wis:8,cha:8 };
+    const totalCost = Object.values(stats).reduce((acc,v)=>acc + (POINT_BUY_COST[v]||0), 0);
+    const statCosts = {};
+    for (const k of Object.keys(stats)) statCosts[k] = POINT_BUY_COST[stats[k]] || 0;
+    ctx.eq5e.chargen.pointBuy = { budget: POINT_BUY_BUDGET, spent: totalCost, remaining: Math.max(0, POINT_BUY_BUDGET - totalCost) };
+    ctx.eq5e.chargen.statCosts = statCosts;
 
     return ctx;
   }
@@ -372,6 +389,13 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     if (name === "cls") this._data.cls = _titleCase(val);
     if (name === "autoSpells") this._data.autoSpells = !!val;
     if (name === "autoItems") this._data.autoItems = !!val;
+    if (name && name.startsWith && name.startsWith("stat.")) {
+      // name like stat.str
+      const stat = name.split('.')[1];
+      const num = Number(val) || 8;
+      this._data.stats = this._data.stats || { str:8,dex:8,con:8,int:8,wis:8,cha:8 };
+      this._data.stats[stat] = Math.max(8, Math.min(15, num));
+    }
 
     // Settings are GM-only and stored to world settings.
     if (name === "settings.restrictionsEnabled" && game.user?.isGM) {
@@ -389,9 +413,24 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     const btn = event.currentTarget;
     const action = btn?.dataset?.action;
     if (!action) return;
+    // Point-buy increment/decrement handlers
+    if (action === 'incStat' || action === 'decStat') {
+      const stat = btn.dataset.stat;
+      if (!stat) return;
+      this._data.stats = this._data.stats || { str:8,dex:8,con:8,int:8,wis:8,cha:8 };
+      const cur = Number(this._data.stats[stat] || 8);
+      const next = action === 'incStat' ? Math.min(15, cur + 1) : Math.max(8, cur - 1);
+      // enforce point-buy budget
+      const cost = (s) => ({8:0,9:1,10:2,11:3,12:4,13:5,14:7,15:9})[s] ?? 0;
+      const currentTotal = Object.values(this._data.stats).reduce((acc,v)=>acc+cost(v),0);
+      const prospective = currentTotal - cost(cur) + cost(next);
+      const budget = 27;
+      if (prospective <= budget) this._data.stats[stat] = next;
+      return this.render({ parts: ["app"] });
+    }
 
     if (action === "next") {
-      this._step = Math.min(3, this._step + 1);
+      this._step = Math.min(4, this._step + 1);
       return this.render({ parts: ["app"] });
     }
     if (action === "back") {
@@ -429,6 +468,19 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       }
 
       await _applyRaceClassBasics(actor, { race, cls });
+
+      // Apply chosen ability scores (base scores from point-buy)
+      try {
+        const stats = this._data.stats || { str:8,dex:8,con:8,int:8,wis:8,cha:8 };
+        const upd = {};
+        for (const [k,v] of Object.entries(stats)) {
+          // Foundry uses ability keys like 'str','dex' etc.
+          upd[`system.abilities.${k}.value`] = Number(v) || 8;
+        }
+        await actor.update(upd);
+      } catch(e) {
+        console.warn("[EQ5E] Failed to apply stats to actor", e);
+      }
 
       // Best-effort: add a `class` and `race` Item to the actor so sheets
       // that prefer an embedded Class/ Race document can show properly.

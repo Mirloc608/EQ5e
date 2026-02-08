@@ -51,23 +51,88 @@
       <div class="hint">Starter spells/items will be added if matching compendium entries exist.</div>
     </div>
 
-    <div class="row">
-      <label>Options</label>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <label style="display:flex; align-items:center; gap:8px; font-weight:700;">
-          <input type="checkbox" name="autoSpells" {{#if state.autoSpells}}checked{{/if}} />
-          Auto-assign starting spells
-        </label>
-        <label style="display:flex; align-items:center; gap:8px; font-weight:700;">
-          <input type="checkbox" name="autoItems" {{#if state.autoItems}}checked{{/if}} />
-          Add starter gear (best effort)
-        </label>
+    {{#if (eq eq5e.chargen.step 2)}}
+      <div class="row">
+        <label>Ability Scores (Point-Buy)</label>
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+            <div class="pill">Budget: {{eq5e.chargen.pointBuy.budget}}</div>
+            <div class="pill">Spent: {{eq5e.chargen.pointBuy.spent}}</div>
+            <div class="pill">Remaining: {{eq5e.chargen.pointBuy.remaining}}</div>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:36px; font-weight:900; text-transform:uppercase;">STR</div>
+              <button type="button" class="eq5e-mini-btn" data-action="decStat" data-stat="str">−</button>
+              <div style="width:40px; text-align:center; font-weight:900;">{{state.stats.str}}</div>
+              <button type="button" class="eq5e-mini-btn" data-action="incStat" data-stat="str">+</button>
+              <div class="eq5e-muted" style="font-size:12px; margin-left:6px;">Cost: {{eq5e.chargen.statCosts.str}}</div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:36px; font-weight:900; text-transform:uppercase;">DEX</div>
+              <button type="button" class="eq5e-mini-btn" data-action="decStat" data-stat="dex">−</button>
+              <div style="width:40px; text-align:center; font-weight:900;">{{state.stats.dex}}</div>
+              <button type="button" class="eq5e-mini-btn" data-action="incStat" data-stat="dex">+</button>
+              <div class="eq5e-muted" style="font-size:12px; margin-left:6px;">Cost: {{eq5e.chargen.statCosts.dex}}</div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:36px; font-weight:900; text-transform:uppercase;">CON</div>
+              <button type="button" class="eq5e-mini-btn" data-action="decStat" data-stat="con">−</button>
+              <div style="width:40px; text-align:center; font-weight:900;">{{state.stats.con}}</div>
+              <button type="button" class="eq5e-mini-btn" data-action="incStat" data-stat="con">+</button>
+              <div class="eq5e-muted" style="font-size:12px; margin-left:6px;">Cost: {{eq5e.chargen.statCosts.con}}</div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:36px; font-weight:900; text-transform:uppercase;">INT</div>
+              <button type="button" class="eq5e-mini-btn" data-action="decStat" data-stat="int">−</button>
+              <div style="width:40px; text-align:center; font-weight:900;">{{state.stats.int}}</div>
+              <button type="button" class="eq5e-mini-btn" data-action="incStat" data-stat="int">+</button>
+              <div class="eq5e-muted" style="font-size:12px; margin-left:6px;">Cost: {{eq5e.chargen.statCosts.int}}</div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:36px; font-weight:900; text-transform:uppercase;">WIS</div>
+              <button type="button" class="eq5e-mini-btn" data-action="decStat" data-stat="wis">−</button>
+              <div style="width:40px; text-align:center; font-weight:900;">{{state.stats.wis}}</div>
+              <button type="button" class="eq5e-mini-btn" data-action="incStat" data-stat="wis">+</button>
+              <div class="eq5e-muted" style="font-size:12px; margin-left:6px;">Cost: {{eq5e.chargen.statCosts.wis}}</div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="width:36px; font-weight:900; text-transform:uppercase;">CHA</div>
+              <button type="button" class="eq5e-mini-btn" data-action="decStat" data-stat="cha">−</button>
+              <div style="width:40px; text-align:center; font-weight:900;">{{state.stats.cha}}</div>
+              <button type="button" class="eq5e-mini-btn" data-action="incStat" data-stat="cha">+</button>
+              <div class="eq5e-muted" style="font-size:12px; margin-left:6px;">Cost: {{eq5e.chargen.statCosts.cha}}</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    {{/if}}
+
+    {{#if (eq eq5e.chargen.step 3)}}
+      <div class="row">
+        <label>Options</label>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="display:flex; align-items:center; gap:8px; font-weight:700;">
+            <input type="checkbox" name="autoSpells" {{#if state.autoSpells}}checked{{/if}} />
+            Auto-assign starting spells
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; font-weight:700;">
+            <input type="checkbox" name="autoItems" {{#if state.autoItems}}checked{{/if}} />
+            Add starter gear (best effort)
+          </label>
+        </div>
+      </div>
+    {{/if}}
   </div>
 
   <div class="footer">
     <button type="button" data-action="cancel">Cancel</button>
-    <button type="button" data-action="create"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Character</button>
+    {{#if (gt eq5e.chargen.step 1)}}<button type="button" data-action="back">Back</button>{{/if}}
+    {{#if (lt eq5e.chargen.step 4)}}<button type="button" data-action="next">Next</button>{{else}}<button type="button" data-action="create"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Character</button>{{/if}}
   </div>
 </section>
