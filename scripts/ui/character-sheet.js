@@ -83,6 +83,8 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const classItem = _getPrimaryClassItem(actor);
     ctx.eq5e.sheet = ctx.eq5e.sheet ?? {};
     ctx.eq5e.sheet.className = classItem?.name ?? _getPrimaryClassName(actor) ?? "";
+    ctx.eq5e.sheet.race = foundry.utils.getProperty(actor, "system.details.race") ?? "";
+    ctx.eq5e.sheet.level = foundry.utils.getProperty(actor, "system.details.level") ?? 1;
 
     // Vital stats: AC, Init, Speed, HP
     ctx.eq5e.sheet.vitals = ctx.eq5e.sheet.vitals ?? {
