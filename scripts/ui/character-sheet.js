@@ -14,6 +14,28 @@ function _getPrimaryClassName(actor) {
   return cls?.name ?? actor?.system?.details?.class ?? actor?.system?.class ?? "";
 }
 
+function _normalizeRaceName(name) { return String(name ?? "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+
+const RACE_BONUSES = {
+  human: { str:1, dex:1, con:1, int:1, wis:1, cha:1 },
+  barbarian: { str:2, con:1 },
+  erudite: { int:2 },
+  elf: { dex:2 },
+  woodelf: { dex:2 },
+  highelf: { dex:2, int:1 },
+  darkelf: { dex:2, cha:1 },
+  halfelf: { cha:2 },
+  dwarf: { con:2 },
+  halfling: { dex:2 },
+  gnome: { int:2 },
+  ogre: { str:2 },
+  troll: { con:2 },
+  iksar: { str:2 },
+  vahshir: { dex:2 },
+  froglok: { con:1, dex:1 },
+  drakkin: { con:1, str:1 }
+};
+
 // Crest: prefer class item icon, fall back to mapping
 function _crestForActor(actor) {
   const cls = _getPrimaryClassItem(actor);
@@ -97,15 +119,24 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       }
     };
 
-    // Abilities: map system abilities to display format
+    // Abilities: map system abilities to display format and apply racial bonuses
     const abilities = foundry.utils.getProperty(actor, "system.abilities") ?? {};
-    ctx.eq5e.sheet.abilities = Object.entries(abilities).map(([k, v]) => ({
-      key: k,
-      label: (v?.label ?? k).toString().toUpperCase(),
-      value: v?.value ?? 10,
-      mod: v?.mod ?? 0,
-      save: v?.save ?? 0
-    }));
+    const raceKey = _normalizeRaceName(ctx.eq5e.sheet.race || actor?.system?.details?.race);
+    const raceBon = RACE_BONUSES[raceKey] || {};
+    ctx.eq5e.sheet.abilities = Object.entries(abilities).map(([k, v]) => {
+      const base = v?.value ?? 10;
+      const racial = raceBon[k] ?? 0;
+      const total = base + racial;
+      return {
+        key: k,
+        label: (v?.label ?? k).toString().toUpperCase(),
+        base: base,
+        racial: racial,
+        value: total,
+        mod: Math.floor((total - 10) / 2),
+        save: v?.save ?? 0
+      };
+    });
 
     // Skills: map system skills to display format
     const skills = foundry.utils.getProperty(actor, "system.skills") ?? {};

@@ -93,7 +93,7 @@
         {{#each eq5e.sheet.abilities as |a|}}
           <div class="eq5e-ability">
             <div class="abbr">{{a.label}}</div>
-            <div class="score">{{a.value}}</div>
+            <div class="score">{{a.value}} {{#if a.racial}}<span class="eq5e-muted" style="font-size:12px;">(+{{a.racial}})</span>{{/if}}</div>
             <div class="mod">MOD {{a.mod}} • SAVE {{a.save}}</div>
             <div style="margin-top:6px; display:flex; justify-content:center; gap:6px;">
               <button type="button" class="eq5e-mini-btn" data-action="rollAbility" data-ability="{{a.key}}">Roll</button>
