@@ -103,25 +103,39 @@ function _asElement(rootish) {
 
 function _normalizeRaceName(name) { return String(name ?? "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
 
-const RACE_BONUSES = {
-  human: { str:1, dex:1, con:1, int:1, wis:1, cha:1 },
-  barbarian: { str:2, con:1 },
-  erudite: { int:2 },
-  elf: { dex:2 },
-  woodelf: { dex:2 },
-  highelf: { dex:2, int:1 },
-  darkelf: { dex:2, cha:1 },
-  halfelf: { cha:2 },
-  dwarf: { con:2 },
-  halfling: { dex:2 },
-  gnome: { int:2 },
-  ogre: { str:2 },
-  troll: { con:2 },
-  iksar: { str:2 },
-  vahshir: { dex:2 },
-  froglok: { con:1, dex:1 },
-  drakkin: { con:1, str:1 }
-};
+// Race -> ability bonus mapping. Loaded from data file with fallback defaults.
+let RACE_BONUSES = {};
+
+async function _loadRaceBonuses() {
+  if (Object.keys(RACE_BONUSES).length > 0) return RACE_BONUSES;
+  try {
+    const resp = await fetch("systems/eq5e/data/race-bonuses.json");
+    if (resp.ok) RACE_BONUSES = await resp.json();
+  } catch (e) {
+    console.warn("[EQ5E] Failed to load race bonuses data file", e);
+    // Fallback to inline defaults
+    RACE_BONUSES = {
+      human: { str:1, dex:1, con:1, int:1, wis:1, cha:1 },
+      barbarian: { str:2, con:1 },
+      erudite: { int:2 },
+      elf: { dex:2 },
+      woodelf: { dex:2 },
+      highelf: { dex:2, int:1 },
+      darkelf: { dex:2, cha:1 },
+      halfelf: { cha:2 },
+      dwarf: { con:2 },
+      halfling: { dex:2 },
+      gnome: { int:2 },
+      ogre: { str:2 },
+      troll: { con:2 },
+      iksar: { str:2 },
+      vahshir: { dex:2 },
+      froglok: { con:1, dex:1 },
+      drakkin: { con:1, str:1 }
+    };
+  }
+  return RACE_BONUSES;
+}
 
 function _setActiveTab(root, group, tabId) {
   const el = _asElement(root);
@@ -275,6 +289,9 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async _prepareContext(options) {
     const ctx = await super._prepareContext(options);
+
+    // Ensure race bonuses are loaded
+    await _loadRaceBonuses();
 
     const actor = this.actor;
     ctx.actor = actor;

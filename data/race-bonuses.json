@@ -1,0 +1,19 @@
+{
+  "human": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1 },
+  "barbarian": { "str": 2, "con": 1 },
+  "erudite": { "int": 2 },
+  "elf": { "dex": 2 },
+  "woodelf": { "dex": 2 },
+  "highelf": { "dex": 2, "int": 1 },
+  "darkelf": { "dex": 2, "cha": 1 },
+  "halfelf": { "cha": 2 },
+  "dwarf": { "con": 2 },
+  "halfling": { "dex": 2 },
+  "gnome": { "int": 2 },
+  "ogre": { "str": 2 },
+  "troll": { "con": 2 },
+  "iksar": { "str": 2 },
+  "vahshir": { "dex": 2 },
+  "froglok": { "con": 1, "dex": 1 },
+  "drakkin": { "con": 1, "str": 1 }
+}

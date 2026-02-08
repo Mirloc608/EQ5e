@@ -243,6 +243,9 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
   async _prepareContext(options) {
     const ctx = await super._prepareContext(options);
 
+    // Ensure race bonuses are loaded
+    await _loadRaceBonuses();
+
     const gm = game.user?.isGM === true;
     const applyRestrictions = gm
       ? (game.settings.get(SYSTEM_ID, "chargenRestrictionsEnabled") ?? true)
@@ -285,9 +288,24 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     const stats = this._data.stats || { str:8,dex:8,con:8,int:8,wis:8,cha:8 };
     const totalCost = Object.values(stats).reduce((acc,v)=>acc + (POINT_BUY_COST[v]||0), 0);
     const statCosts = {};
-    for (const k of Object.keys(stats)) statCosts[k] = POINT_BUY_COST[stats[k]] || 0;
-    ctx.eq5e.chargen.pointBuy = { budget: POINT_BUY_BUDGET, spent: totalCost, remaining: Math.max(0, POINT_BUY_BUDGET - totalCost) };
+    const buttonStates = {}; // Track which stat inc/dec buttons should be disabled
+    const remaining = Math.max(0, POINT_BUY_BUDGET - totalCost);
+    for (const k of Object.keys(stats)) {
+      statCosts[k] = POINT_BUY_COST[stats[k]] || 0;
+      const cur = stats[k];
+      // Dec button disabled if score is already at minimum (8)
+      buttonStates[`${k}_canDec`] = cur > 8;
+      // Inc button disabled if:
+      //   - score is already at max (15), OR
+      //   - incrementing would cost more points than remaining (budget exceeded)
+      const costInc = POINT_BUY_COST[cur + 1] || 0;
+      const costCur = POINT_BUY_COST[cur] || 0;
+      const nextCost = costInc - costCur;
+      buttonStates[`${k}_canInc`] = cur < 15 && nextCost <= remaining;
+    }
+    ctx.eq5e.chargen.pointBuy = { budget: POINT_BUY_BUDGET, spent: totalCost, remaining };
     ctx.eq5e.chargen.statCosts = statCosts;
+    ctx.eq5e.chargen.buttonStates = buttonStates;
 
     return ctx;
   }
@@ -412,7 +430,7 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     event.preventDefault();
     const btn = event.currentTarget;
     const action = btn?.dataset?.action;
-    if (!action) return;
+    if (!action || btn?.disabled) return; // Ignore disabled buttons
     // Point-buy increment/decrement handlers
     if (action === 'incStat' || action === 'decStat') {
       const stat = btn.dataset.stat;
