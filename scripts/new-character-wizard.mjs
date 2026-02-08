@@ -505,14 +505,14 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
 
       let actor;
       try {
-        actor = await Actor.create({ name, type: "character", img: "systems/eq5e/assets/ui/default-portrait.webp" }, { renderSheet: false });
+        actor = await Actor.create({ name, type: "character", img: "systems/eq5e/assets/ui/default-portrait.webp" }, { renderSheet: true });
       } catch (e) {
         // Some storage backends (or permission setups) may not allow writing to
         // the system's assets path (error like: Directory canvas/tokens does not exist).
         // Fall back to a built-in generic avatar so character creation can continue.
         console.warn("[EQ5E] Actor.create failed with default image, retrying with built-in icon:", e);
         try {
-          actor = await Actor.create({ name, type: "character", img: "icons/svg/mystery-man.svg" }, { renderSheet: false });
+          actor = await Actor.create({ name, type: "character", img: "icons/svg/mystery-man.svg" }, { renderSheet: true });
         } catch (e2) {
           console.error("[EQ5E] Actor.create failed (fallback also failed)", e2);
           throw e2;
@@ -597,8 +597,7 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         if (added) ui.notifications?.info(`EQ5E: Added ${added} starter item(s).`);
       }
 
-      // Open sheet + close wizard
-      await actor.sheet.render(true);
+      // Close wizard and notify
       await this.close();
       ui.notifications?.info("EQ5E: Character created.");
     } catch (e) {
