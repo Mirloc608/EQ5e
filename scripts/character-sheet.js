@@ -69,9 +69,9 @@ function _crestForActor(actor) {
 
   const c = _normalizeClassName(_getPrimaryClassName(actor));
   // Map to actual class PNG files in assets/ui
+  if (/(shadowknight|shadow\s*knight)/.test(c)) return "systems/eq5e/assets/ui/shadowknight.png";
   if (/(warrior)/.test(c)) return "systems/eq5e/assets/ui/warrior.png";
   if (/(paladin)/.test(c)) return "systems/eq5e/assets/ui/paladin.png";
-  if (/(shadow|knight)/.test(c)) return "systems/eq5e/assets/ui/shadowknight.png";
   if (/(berserker)/.test(c)) return "systems/eq5e/assets/ui/berserker.png";
   if (/(druid)/.test(c)) return "systems/eq5e/assets/ui/druid.png";
   if (/(ranger)/.test(c)) return "systems/eq5e/assets/ui/ranger.png";
