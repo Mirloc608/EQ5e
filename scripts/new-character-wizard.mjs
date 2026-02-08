@@ -522,12 +522,13 @@ function _injectButton(html) {
     btn.innerHTML = `<i class="fa-solid fa-feather-pointed"></i> New EQ Character`;
     btn.style.marginLeft = "6px";
     btn.addEventListener("click", () => {
-      // Check if a wizard is already open; if so, focus it. Otherwise, create a new one.
+      // Check if a wizard is already open; if so, focus it. Otherwise, create a new one with a unique id.
       const existing = Object.values(globalThis.ui.windows).find(w => w instanceof EQ5eNewCharacterWizard);
       if (existing) {
         existing.bringToFront();
       } else {
-        const app = new EQ5eNewCharacterWizard();
+        const uid = `eq5e-new-character-wizard-${Date.now()}`;
+        const app = new EQ5eNewCharacterWizard({ id: uid });
         app.render(true);
       }
     });
