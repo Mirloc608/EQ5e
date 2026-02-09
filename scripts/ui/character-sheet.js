@@ -117,8 +117,10 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     // UI setup
     ctx.eq5e = ctx.eq5e ?? {};
+    const crestPath = _crestForActor(actor);
+    console.log("[EQ5E] Sheet context: actor=", actor.name, "class=", _getPrimaryClassName(actor), "crest=", crestPath);
     ctx.eq5e.ui = {
-      crest: _crestForActor(actor),
+      crest: crestPath,
       parchment: "systems/eq5e/assets/ui/parchment.png"
     };
 
