@@ -2,7 +2,7 @@
   {
     "name": "Lifetap I",
     "type": "spell",
-    "img": "icons/magic/death/hand-dirt-undead.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -34,7 +34,7 @@
   {
     "name": "Disease DoT I",
     "type": "spell",
-    "img": "icons/magic/acid/droplet-bubble.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -96,7 +96,7 @@
   {
     "name": "Summon Undead Servant: Skeleton",
     "type": "spell",
-    "img": "icons/creatures/undead/skeleton-warrior.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -120,7 +120,7 @@
               },
               "summonId": "necro.undead-servant",
               "durationRounds": null,
-              "summonType": "undead",
+                "img": "systems/eq5e/assets/ui/default-portrait.webp",
               "abilitiesPack": "world.eq5e-necro-undead-abilities"
             }
           }
@@ -131,7 +131,7 @@
   {
     "name": "Summon Undead Servant: Zombie",
     "type": "spell",
-    "img": "icons/creatures/undead/skeleton-warrior.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -166,7 +166,7 @@
   {
     "name": "Summon Undead Servant: Wraith",
     "type": "spell",
-    "img": "icons/creatures/undead/skeleton-warrior.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -201,7 +201,7 @@
   {
     "name": "Dismiss Undead Servant",
     "type": "spell",
-    "img": "icons/magic/death/hand-skull-pink.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -226,7 +226,7 @@
   {
     "name": "Disease DoT I (Tier 2)",
     "type": "spell",
-    "img": "icons/magic/acid/droplet-bubble.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -258,7 +258,7 @@
   {
     "name": "Disease DoT I (Tier 3)",
     "type": "spell",
-    "img": "icons/magic/acid/droplet-bubble.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {
@@ -290,7 +290,7 @@
   {
     "name": "Disease DoT I (Tier 4)",
     "type": "spell",
-    "img": "icons/magic/acid/droplet-bubble.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {

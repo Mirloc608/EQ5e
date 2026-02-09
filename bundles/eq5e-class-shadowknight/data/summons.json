@@ -54,7 +54,7 @@
   {
     "name": "Dismiss Necrotic Minion",
     "type": "spell",
-    "img": "icons/magic/death/hand-skull-pink.webp",
+    "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {},
     "flags": {
       "eq5e": {

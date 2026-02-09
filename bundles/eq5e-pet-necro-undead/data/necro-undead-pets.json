@@ -2,7 +2,7 @@
   {
     "name": "Undead Servant (Skeleton)",
     "type": "npc",
-    "img": "icons/creatures/undead/skeleton-warrior.webp",
+      "img": "systems/eq5e/assets/ui/default-portrait.webp",
     "system": {
       "attributes": {
         "hp": {
