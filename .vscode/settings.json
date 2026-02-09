@@ -1,4 +1,5 @@
 {
     "lmStudioCopilot.allowFileModifications": true,
-    "lmStudioCopilot.realTimeWatch": true
+    "lmStudioCopilot.realTimeWatch": true,
+    "git.ignoreLimitWarning": true
 }
