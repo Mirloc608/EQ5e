@@ -61,14 +61,11 @@ function _getPrimaryClassName(actor) {
   return cls?.name ?? actor?.system?.details?.class ?? actor?.system?.class ?? "";
 }
 
-// Crest: prefer class item icon, fall back to mapping
+// Crest: prefer class name mapping, fall back to class item icon if set explicitly
 function _crestForActor(actor) {
-  const cls = _getPrimaryClassItem(actor);
-  const img = cls?.getFlag?.("eq5e", "icon") || cls?.img;
-  if (img && img !== "icons/svg/mystery-man.svg") return img;
-
   const c = _normalizeClassName(_getPrimaryClassName(actor));
-  // Map to actual class PNG files in assets/ui
+  
+  // Map to actual class PNG files in assets/ui (prioritize this)
   if (/(shadowknight|shadow\s*knight)/.test(c)) return "systems/eq5e/assets/ui/shadowknight.png";
   if (/(warrior)/.test(c)) return "systems/eq5e/assets/ui/warrior.png";
   if (/(paladin)/.test(c)) return "systems/eq5e/assets/ui/paladin.png";
@@ -85,6 +82,13 @@ function _crestForActor(actor) {
   if (/(rogue|assassin)/.test(c)) return "systems/eq5e/assets/ui/rogue.png";
   if (/(bard|skald)/.test(c)) return "systems/eq5e/assets/ui/bard.png";
   if (/(monk)/.test(c)) return "systems/eq5e/assets/ui/monk.png";
+  
+  // Fall back to class item icon if it's set to something other than default
+  const cls = _getPrimaryClassItem(actor);
+  const img = cls?.getFlag?.("eq5e", "icon") || cls?.img;
+  if (img && img !== "icons/svg/mystery-man.svg" && !img.includes("default-portrait")) return img;
+  
+  // Ultimate fallback
   const fallback = "systems/eq5e/assets/ui/warrior.png";
   const className = _getPrimaryClassName(actor);
   console.log(`[EQ5E] No crest match for class "${className}"; using fallback:`, fallback);
@@ -303,10 +307,8 @@ export class EQ5eActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     ctx.items = actor?.items?.map(i => i.toObject()) ?? [];
 
     ctx.eq5e = ctx.eq5e ?? {};
-    const crestPath = _crestForActor(actor);
-    console.log("[EQ5E] Sheet context: actor=", actor.name, "class=", _getPrimaryClassName(actor), "crest=", crestPath);
     ctx.eq5e.ui = {
-      crest: crestPath,
+      crest: _crestForActor(actor),
       parchment: "systems/eq5e/assets/ui/parchment.png",
       dropin: DROPIN_TAG
     };
