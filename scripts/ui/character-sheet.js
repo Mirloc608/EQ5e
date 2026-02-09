@@ -74,7 +74,10 @@ function _crestForActor(actor) {
   if (/(rogue|assassin)/.test(c)) return "systems/eq5e/assets/ui/rogue.png";
   if (/(bard|skald)/.test(c)) return "systems/eq5e/assets/ui/bard.png";
   if (/(monk)/.test(c)) return "systems/eq5e/assets/ui/monk.png";
-  return "systems/eq5e/assets/ui/warrior.png";
+  const fallback = "systems/eq5e/assets/ui/warrior.png";
+  const className = _getPrimaryClassName(actor);
+  console.log(`[EQ5E] No crest match for class "${className}"; using fallback:`, fallback);
+  return fallback;
 }
 
 /* ---------------------------------- Sheet --------------------------------- */

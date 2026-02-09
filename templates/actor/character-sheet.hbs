@@ -40,8 +40,8 @@
     .eq5e-slot { font-size: 11px; opacity: .85; text-align:right; }
 
     .eq5e-paperdoll { display:grid; grid-template-columns: 1fr 180px 1fr; gap: 12px; align-items: start; }
-    .eq5e-doll-silhouette { height: 420px; border-radius: 16px; border: 1px solid rgba(60,40,20,0.22); background: rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-weight: 900; opacity: .7; text-align:center; padding: 10px; }
-    .eq5e-crest-center { width: 100%; height: 100%; max-width: 260px; max-height: 420px; object-fit: contain; opacity: 0.95; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.35)); }
+    .eq5e-doll-silhouette { height: 420px; border-radius: 16px; border: 1px solid rgba(60,40,20,0.22); background: rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-weight: 900; text-align:center; padding: 10px; }
+    .eq5e-crest-center { max-width: 160px; max-height: 300px; object-fit: contain; opacity: 0.9; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
     .eq5e-slotbox { border-radius: 12px; border: 1px solid rgba(60,40,20,0.22); background: rgba(255,255,255,0.14); padding: 8px; margin-bottom: 8px; outline: 1px dashed rgba(60,40,20,0.25); }
     .eq5e-slotbox:hover { filter: brightness(1.06); }
     .eq5e-slotbox.drop-hover { filter: brightness(1.08); outline-style: solid; }
@@ -190,8 +190,13 @@
           </div>
 
           <div class="eq5e-doll-silhouette">
+            {{!-- Debug: show crest info --}}
             {{#if eq5e.ui.crest}}
-              <img class="eq5e-crest-center" src="{{eq5e.ui.crest}}" alt="Class Crest" onerror="this.style.display='none'"/>
+              Crest: {{eq5e.ui.crest}}
+              <img class="eq5e-crest-center" src="{{eq5e.ui.crest}}" alt="Class Crest" />
+            {{else}}
+              <i class="fa-solid fa-crown" style="font-size: 80px; opacity: 0.5;"></i>
+              (No crest found)
             {{/if}}
           </div>
 
