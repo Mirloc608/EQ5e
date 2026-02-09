@@ -26,7 +26,7 @@ async function ensureWorldPack({ key, label, type = "Item" } = {}) {
   const existing = game.packs?.get(key);
   if (existing) return existing;
   if (!game.user.isGM) throw new Error("Only GM can create world compendiums.");
-  return CompendiumCollection.createCompendium({
+  return foundry.documents.collections.CompendiumCollection.createCompendium({
     label,
     name: key.split(".")[1],
     type,
@@ -35,52 +35,61 @@ async function ensureWorldPack({ key, label, type = "Item" } = {}) {
 }
 
 async function upsertCoreSpells(pack, items) {
-  const existing = await pack.getDocuments();
-  const bySpellId = new Map();
-  for (const d of existing) {
-    const sid = d?.flags?.eq5e?.spell?.spellId;
-    if (sid) bySpellId.set(sid, d);
-  }
+  try {
+    const existing = await pack.getDocuments();
+    const bySpellId = new Map();
+    for (const d of existing) {
+      const sid = d?.flags?.eq5e?.spell?.spellId;
+      if (sid) bySpellId.set(sid, d);
+    }
 
-  const toCreate = [];
-  const toUpdate = [];
+    const toCreate = [];
+    const toUpdate = [];
 
-  for (const it of (items ?? [])) {
-    const sid = it?.flags?.eq5e?.spell?.spellId;
-    if (!sid) continue;
-    const doc = bySpellId.get(sid);
-    if (!doc) {
-      // stamp derivedHash for future comparisons
-      const h = _stableHash(it);
-      it.flags = it.flags ?? {};
-      it.flags.eq5e = it.flags.eq5e ?? {};
-      it.flags.eq5e.derivedHash = h;
-      toCreate.push(it);
-    } else {
-      const h = _stableHash(it);
-      const old = doc?.flags?.eq5e?.derivedHash;
-      if (h !== old) {
-        // rehab the document
-        const upd = foundry.utils.mergeObject(doc.toObject(), it, { inplace: false });
-        upd.flags.eq5e.derivedHash = h;
-        toUpdate.push({ _id: doc.id, ...upd });
+    for (const it of (items ?? [])) {
+      const sid = it?.flags?.eq5e?.spell?.spellId;
+      if (!sid) continue;
+      const doc = bySpellId.get(sid);
+      if (!doc) {
+        // New item: stamp derivedHash for future comparisons
+        const h = _stableHash(it);
+        it.flags = it.flags ?? {};
+        it.flags.eq5e = it.flags.eq5e ?? {};
+        it.flags.eq5e.derivedHash = h;
+        toCreate.push(it);
+      } else {
+        // Existing item: check if it changed
+        const h = _stableHash(it);
+        const old = doc?.flags?.eq5e?.derivedHash;
+        if (h !== old) {
+          // Content changed: update the document
+          const upd = foundry.utils.duplicate(it);
+          upd._id = doc.id;
+          upd.flags = upd.flags ?? {};
+          upd.flags.eq5e = upd.flags.eq5e ?? {};
+          upd.flags.eq5e.derivedHash = h;
+          toUpdate.push(upd);
+        }
       }
     }
-  }
 
-  let created = 0;
-  let updated = 0;
+    let created = 0;
+    let updated = 0;
 
-  if (toCreate.length) {
-    const docs = await pack.createDocuments(toCreate);
-    created = docs.length;
-  }
-  if (toUpdate.length) {
-    const docs = await pack.updateDocuments(toUpdate);
-    updated = docs.length;
-  }
+    if (toCreate.length) {
+      await pack.documentClass.createDocuments(toCreate, { pack: pack.collection });
+      created = toCreate.length;
+    }
+    if (toUpdate.length) {
+      await pack.documentClass.updateDocuments(toUpdate, { pack: pack.collection });
+      updated = toUpdate.length;
+    }
 
-  return { created, updated };
+    return { created, updated };
+  } catch (e) {
+    console.error("[EQ5E] Error in upsertCoreSpells:", e);
+    throw e;
+  }
 }
 
 export async function generateCoreSpellsCompendium({
