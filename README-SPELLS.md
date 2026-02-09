@@ -1,17 +1,49 @@
 # EQ5e Spell Compendium + Condition Spell Examples
 
-This repo ships a **deterministic world compendium generator** that creates a world item pack containing example spells
-that apply the core EQ5e conditions:
+This repo ships a **deterministic world compendium generator** that creates world item packs containing spells.
+
+## Core Spells Compendium (NEW!)
+
+The system now includes a **consolidated core spell database** available to all classes and characters as a foundation.
+
+### Source
+- File: `system/eq5e/data/spells-core.json`
+- Contains 20+ foundation spells for all core activities:
+  - **Healing:** Minor, Light, Standard, Group Healing
+  - **Damage/Nukes:** Fireball, Frost Bolt, Lightning Bolt
+  - **Control:** Root, Mesmerize, Snare
+  - **Debuffs:** Weakness
+  - **Buffs:** Haste, Armor, Mirror Image, Clarity, Mana Regeneration
+  - **DoTs:** Lifetap, Disease Cloud
+  - **Summoning:** Summon Weapon
+  - **Utility:** Levitate, Invisibility
+
+### Generated Compendium
+- World pack key: `world.eq5e-spells-core`
+- Label: `EQ5e Spells (Core)`
+- Auto-generated on world ready (configurable via GM setting)
+- Deterministically upserted by `flags.eq5e.spell.spellId`
+
+### Control
+System setting:
+- **Core Spells: Import spells on startup** (`eq5e.coreSpellsOnStartup`)
+
+---
+
+## Example Spells Compendium
+
+This repo also ships a **deterministic world compendium generator** that creates a world item pack containing example spells
+that apply core EQ5e conditions:
 
 - **Mez** → `mezzed` (break on damage)
 - **Root** → `rooted`
 - **Snare** → `snared` (moveMult 0.5)
 - **Silence** → `silenced` (blocks casting)
 
-## Where the sources live
+## Where the example sources live
 - `system/eq5e/data/spells-examples.json`
 
-## Where the compendium is generated
+## Where the example compendium is generated
 - World pack key: `world.eq5e-spells-examples`
 - Label: `EQ5e Spells (Examples)`
 

@@ -1,0 +1,738 @@
+[
+  {
+    "name": "Minor Healing",
+    "type": "spell",
+    "img": "icons/magic/life/cross-yellow-green.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.heal.minor",
+          "kind": "heal",
+          "enabled": true,
+          "rangeFt": 30,
+          "manaCost": 3,
+          "priority": 10,
+          "damage": [
+            {
+              "formula": "1d6+1",
+              "type": "healing",
+              "category": "healing",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["heal", "heal:primary"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Light Healing",
+    "type": "spell",
+    "img": "icons/magic/life/cross-yellow-green.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.heal.light",
+          "kind": "heal",
+          "enabled": true,
+          "rangeFt": 30,
+          "manaCost": 5,
+          "priority": 20,
+          "damage": [
+            {
+              "formula": "1d8+2",
+              "type": "healing",
+              "category": "healing",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["heal", "heal:primary"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Healing",
+    "type": "spell",
+    "img": "icons/magic/life/cross-yellow-green.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.heal.standard",
+          "kind": "heal",
+          "enabled": true,
+          "rangeFt": 30,
+          "manaCost": 8,
+          "priority": 30,
+          "damage": [
+            {
+              "formula": "2d8+4",
+              "type": "healing",
+              "category": "healing",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["heal", "heal:primary"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Group Healing",
+    "type": "spell",
+    "img": "icons/magic/life/heal-hands-glowing-white.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.heal.group",
+          "kind": "heal",
+          "enabled": true,
+          "rangeFt": 60,
+          "manaCost": 12,
+          "priority": 40,
+          "damage": [
+            {
+              "formula": "2d6+3",
+              "type": "healing",
+              "category": "healing",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["heal", "heal:group", "aoe"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Fireball",
+    "type": "spell",
+    "img": "icons/magic/fire/ball-explosion-orange.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.nuke.fireball",
+          "kind": "nuke",
+          "enabled": true,
+          "rangeFt": 150,
+          "manaCost": 8,
+          "priority": 40,
+          "damage": [
+            {
+              "type": "fire",
+              "formula": "6d6",
+              "category": "spell",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["nuke", "fire"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Frost Bolt",
+    "type": "spell",
+    "img": "icons/magic/water/ice-snowball.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.nuke.frost",
+          "kind": "nuke",
+          "enabled": true,
+          "rangeFt": 120,
+          "manaCost": 7,
+          "priority": 35,
+          "damage": [
+            {
+              "type": "cold",
+              "formula": "5d6",
+              "category": "spell",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["nuke", "cold"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Lightning Bolt",
+    "type": "spell",
+    "img": "icons/magic/lightning/bolt-blue.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.nuke.lightning",
+          "kind": "nuke",
+          "enabled": true,
+          "rangeFt": 140,
+          "manaCost": 8,
+          "priority": 38,
+          "damage": [
+            {
+              "type": "lightning",
+              "formula": "6d6",
+              "category": "spell",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["nuke", "lightning"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Root",
+    "type": "spell",
+    "img": "icons/magic/nature/root-vine-entangle.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.control.root",
+          "kind": "control",
+          "enabled": true,
+          "rangeFt": 60,
+          "manaCost": 4,
+          "priority": 30,
+          "damage": [],
+          "conditions": [
+            {
+              "id": "rooted",
+              "duration": {
+                "rounds": 3
+              },
+              "meta": {
+                "tags": ["control", "root"]
+              }
+            }
+          ],
+          "meta": {
+            "tags": ["control", "root"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Mesmerize",
+    "type": "spell",
+    "img": "icons/magic/control/hypnosis-mesmerism-eye.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.control.mez",
+          "kind": "mez",
+          "enabled": true,
+          "rangeFt": 60,
+          "manaCost": 6,
+          "priority": 40,
+          "damage": [],
+          "conditions": [
+            {
+              "id": "mezzed",
+              "duration": {
+                "rounds": 2
+              },
+              "meta": {
+                "breakOnDamage": true,
+                "tags": ["control", "mez"]
+              }
+            }
+          ],
+          "meta": {
+            "tags": ["control", "mez"]
+          },
+          "cooldown": {
+            "value": 3
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Snare",
+    "type": "spell",
+    "img": "icons/magic/nature/vine-tangles.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.control.snare",
+          "kind": "snare",
+          "enabled": true,
+          "rangeFt": 80,
+          "manaCost": 4,
+          "priority": 25,
+          "damage": [],
+          "conditions": [
+            {
+              "id": "snared",
+              "duration": {
+                "rounds": 4
+              },
+              "meta": {
+                "tags": ["control", "snare"]
+              }
+            }
+          ],
+          "meta": {
+            "tags": ["control", "snare"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Weakness",
+    "type": "spell",
+    "img": "icons/magic/unholy/hand-bony-manipulate.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.debuff.weakness",
+          "kind": "debuff",
+          "enabled": true,
+          "rangeFt": 60,
+          "manaCost": 4,
+          "priority": 35,
+          "damage": [],
+          "conditions": [
+            {
+              "id": "weakened",
+              "duration": {
+                "rounds": 3
+              },
+              "meta": {
+                "tags": ["debuff"]
+              }
+            }
+          ],
+          "meta": {
+            "activeEffect": {
+              "label": "Weakness",
+              "durationRounds": 3,
+              "changes": [
+                {
+                  "key": "flags.eq5e.combat.attackBonusFlat",
+                  "mode": 2,
+                  "value": "-2",
+                  "priority": 20
+                }
+              ]
+            },
+            "tags": ["debuff"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Haste",
+    "type": "spell",
+    "img": "icons/magic/air/wind-stream-swirl-yellow.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.buff.haste",
+          "kind": "buff",
+          "enabled": true,
+          "rangeFt": 40,
+          "manaCost": 6,
+          "priority": 50,
+          "damage": [],
+          "conditions": [],
+          "meta": {
+            "activeEffect": {
+              "label": "Haste",
+              "durationRounds": 5,
+              "changes": [
+                {
+                  "key": "flags.eq5e.combat.fastAttackMod",
+                  "mode": 2,
+                  "value": "1",
+                  "priority": 20
+                },
+                {
+                  "key": "flags.eq5e.combat.attackBonusFlat",
+                  "mode": 2,
+                  "value": "1",
+                  "priority": 20
+                }
+              ]
+            },
+            "tags": ["buff", "group"]
+          },
+          "cooldown": {
+            "value": 3
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Armor",
+    "type": "spell",
+    "img": "icons/magic/defensive/shield-rainbow.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.buff.armor",
+          "kind": "buff",
+          "enabled": true,
+          "rangeFt": 40,
+          "manaCost": 4,
+          "priority": 45,
+          "damage": [],
+          "conditions": [],
+          "meta": {
+            "activeEffect": {
+              "label": "Armor",
+              "durationRounds": 6,
+              "changes": [
+                {
+                  "key": "flags.eq5e.mitigation.physical",
+                  "mode": 2,
+                  "value": "2",
+                  "priority": 20
+                }
+              ]
+            },
+            "tags": ["buff", "defense"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Mirror Image",
+    "type": "spell",
+    "img": "icons/magic/defensive/shield-rainbow.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.buff.mirror",
+          "kind": "buff",
+          "enabled": true,
+          "rangeFt": 30,
+          "manaCost": 5,
+          "priority": 48,
+          "damage": [],
+          "conditions": [],
+          "meta": {
+            "activeEffect": {
+              "label": "Mirror Image",
+              "durationRounds": 4,
+              "changes": [
+                {
+                  "key": "flags.eq5e.mitigation.magic",
+                  "mode": 2,
+                  "value": "1",
+                  "priority": 20
+                }
+              ]
+            },
+            "tags": ["buff", "defense", "illusion"]
+          },
+          "cooldown": {
+            "value": 3
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Lifetap",
+    "type": "spell",
+    "img": "icons/magic/unholy/drain-life.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.dot.lifetap",
+          "kind": "dot",
+          "enabled": true,
+          "rangeFt": 100,
+          "manaCost": 6,
+          "priority": 35,
+          "damage": [
+            {
+              "type": "dark",
+              "formula": "4d6",
+              "category": "spell",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["dot", "life-drain", "dark"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Disease Cloud",
+    "type": "spell",
+    "img": "icons/magic/unholy/poison-cloud-sickly.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.dot.disease",
+          "kind": "dot",
+          "enabled": true,
+          "rangeFt": 120,
+          "manaCost": 8,
+          "priority": 38,
+          "damage": [
+            {
+              "type": "poison",
+              "formula": "2d6",
+              "category": "spell",
+              "tags": []
+            }
+          ],
+          "conditions": [
+            {
+              "id": "diseased",
+              "duration": {
+                "rounds": 5
+              },
+              "meta": {
+                "tags": ["dot", "disease"]
+              }
+            }
+          ],
+          "meta": {
+            "tags": ["dot", "disease", "aoe"]
+          },
+          "cooldown": {
+            "value": 3
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Summon Weapon",
+    "type": "spell",
+    "img": "icons/magic/summoning/projectile-smoke-explosion.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.summon.weapon",
+          "kind": "summon",
+          "enabled": true,
+          "rangeFt": 30,
+          "manaCost": 4,
+          "priority": 40,
+          "damage": [
+            {
+              "type": "bludgeoning",
+              "formula": "3d4",
+              "category": "spell",
+              "tags": []
+            }
+          ],
+          "meta": {
+            "tags": ["summon", "weapon"]
+          },
+          "cooldown": {
+            "value": 1
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Clarity",
+    "type": "spell",
+    "img": "icons/magic/divine/light-radiance.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.buff.clarity",
+          "kind": "buff",
+          "enabled": true,
+          "rangeFt": 40,
+          "manaCost": 3,
+          "priority": 55,
+          "damage": [],
+          "conditions": [],
+          "meta": {
+            "activeEffect": {
+              "label": "Clarity",
+              "durationRounds": 4,
+              "changes": [
+                {
+                  "key": "flags.eq5e.magic.spellDamageMult",
+                  "mode": 2,
+                  "value": "0.1",
+                  "priority": 20
+                }
+              ]
+            },
+            "tags": ["buff", "magic"]
+          },
+          "cooldown": {
+            "value": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Mana Regeneration",
+    "type": "spell",
+    "img": "icons/magic/nature/plant-flower-bloom.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.buff.manaregen",
+          "kind": "buff",
+          "enabled": true,
+          "rangeFt": 40,
+          "manaCost": 5,
+          "priority": 52,
+          "damage": [],
+          "conditions": [],
+          "meta": {
+            "activeEffect": {
+              "label": "Mana Regeneration",
+              "durationRounds": 5,
+              "changes": [
+                {
+                  "key": "flags.eq5e.regeneration.manaPerRound",
+                  "mode": 2,
+                  "value": "1",
+                  "priority": 20
+                }
+              ]
+            },
+            "tags": ["buff", "utility"]
+          },
+          "cooldown": {
+            "value": 3
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Levitate",
+    "type": "spell",
+    "img": "icons/magic/air/wind-gust-blue.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.utility.levitate",
+          "kind": "utility",
+          "enabled": true,
+          "rangeFt": 30,
+          "manaCost": 2,
+          "priority": 20,
+          "damage": [],
+          "conditions": [],
+          "meta": {
+            "tags": ["utility", "movement"]
+          },
+          "cooldown": {
+            "value": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Invisibility",
+    "type": "spell",
+    "img": "icons/magic/illusion/smoke-stealth-invisibility.webp",
+    "system": {},
+    "flags": {
+      "eq5e": {
+        "spell": {
+          "spellId": "core.utility.invisibility",
+          "kind": "utility",
+          "enabled": true,
+          "rangeFt": 30,
+          "manaCost": 5,
+          "priority": 30,
+          "damage": [],
+          "conditions": [],
+          "meta": {
+            "activeEffect": {
+              "label": "Invisibility",
+              "durationRounds": 6,
+              "changes": [
+                {
+                  "key": "flags.eq5e.stealth.invisible",
+                  "mode": 5,
+                  "value": "1",
+                  "priority": 20
+                }
+              ]
+            },
+            "tags": ["utility", "stealth", "illusion"]
+          },
+          "cooldown": {
+            "value": 5
+          }
+        }
+      }
+    }
+  }
+]

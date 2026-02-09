@@ -2,7 +2,7 @@
   "id": "eq5e",
   "title": "EverQuest 5e",
   "description": "EverQuest-inspired campaign system using D&D 5e as a guide.",
-  "version": "1.0.0-beta.46.13",
+  "version": "1.0.0-beta.47.0",
   "authors": [
     { "name": "David" }
   ],
@@ -14,6 +14,7 @@
   "esmodules": [
     "scripts/eq5e.mjs",
     "scripts/eq5e-patches.mjs",
+    "scripts/spells-core-loader.mjs",
     "scripts/new-character-wizard.mjs",
     "scripts/character-sheet.js"
   ],
