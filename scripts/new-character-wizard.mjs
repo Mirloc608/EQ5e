@@ -340,6 +340,11 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     ctx.eq5e.chargen.pointBuy = { budget: POINT_BUY_BUDGET, spent: totalCost, remaining };
     ctx.eq5e.chargen.statCosts = statCosts;
     ctx.eq5e.chargen.buttonStates = buttonStates;
+    
+    // Compute button visibility
+    ctx.eq5e.chargen.showBackButton = this._step > 1;
+    ctx.eq5e.chargen.showNextButton = this._step < 4;
+    ctx.eq5e.chargen.showCreateButton = this._step >= 4;
 
     return ctx;
   }

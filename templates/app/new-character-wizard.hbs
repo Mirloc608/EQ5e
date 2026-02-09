@@ -137,7 +137,8 @@
 
   <div class="footer">
     <button type="button" data-action="cancel">Cancel</button>
-    {{#if (gt eq5e.chargen.step 1)}}<button type="button" data-action="back">Back</button>{{/if}}
-    {{#if (lt eq5e.chargen.step 4)}}<button type="button" data-action="next">Next</button>{{else}}<button type="button" data-action="create"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Character</button>{{/if}}
+    {{#if eq5e.chargen.showBackButton}}<button type="button" data-action="back">Back</button>{{/if}}
+    {{#if eq5e.chargen.showNextButton}}<button type="button" data-action="next">Next</button>{{/if}}
+    {{#if eq5e.chargen.showCreateButton}}<button type="button" data-action="create"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Character</button>{{/if}}
   </div>
 </section>
