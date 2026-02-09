@@ -250,7 +250,7 @@ class EQ5eNewCharacterWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       title: "New Character (EQ5e)",
       resizable: true
     },
-    position: { width: 720, height: 640 }
+    position: { width: 820, height: 720 }
   });
 
   static PARTS = {
