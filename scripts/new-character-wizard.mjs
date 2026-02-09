@@ -625,15 +625,10 @@ function _injectButton(html) {
     btn.innerHTML = `<i class="fa-solid fa-feather-pointed"></i> New EQ Character`;
     btn.style.marginLeft = "6px";
     btn.addEventListener("click", () => {
-      // Check if a wizard is already open; if so, focus it. Otherwise, create a new one with a unique id.
-      const existing = Object.values(globalThis.ui.windows).find(w => w instanceof EQ5eNewCharacterWizard);
-      if (existing) {
-        existing.bringToFront();
-      } else {
-        const uid = `eq5e-new-character-wizard-${Date.now()}`;
-        const app = new EQ5eNewCharacterWizard({ id: uid });
-        app.render(true);
-      }
+      // Always create a new wizard instance with a unique ID so multiple can be open at once
+      const uid = `eq5e-new-character-wizard-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const app = new EQ5eNewCharacterWizard({ id: uid });
+      app.render(true);
     });
 
     // Prefer to place the button next to the directory Create button (if present).
