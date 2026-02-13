@@ -6,5 +6,10 @@
     "continue.enableQuickActions": true,
     "continue.remoteConfigServerUrl": "http://localhost:1234",
     "chatgpt.openOnStartup": false,
-    "windowsaistudio.openAIInferencePort": 1234
+    "windowsaistudio.openAIInferencePort": 1234,
+    "ollama-copilot.model": "qwen3-coder:30b",
+    "ollama-copilot.temperature": 0.7,
+    "editor.defaultFormatter": "RivanMota.ollama-ai",
+    "editor.defaultFoldingRangeProvider": "RivanMota.ollama-ai",
+    "notebook.defaultFormatter": "RivanMota.ollama-ai"
 }
